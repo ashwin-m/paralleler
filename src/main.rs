@@ -3,6 +3,11 @@
 use rocket::response::status;
 use rocket::form::Form;
 use rocket::fs::TempFile;
+use rocket_db_pools::Database;
+
+use crate::models::paralleler::Paralleler;
+
+pub mod models;
 
 #[derive(FromForm)]
 struct Upload<'r> {
@@ -21,5 +26,7 @@ fn submit(upload: Form<Upload<'_>>) -> status::Accepted<&'static str> {
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index, submit])
+    rocket::build()
+    .mount("/", routes![index, submit])
+    .attach(Paralleler::init())
 }
